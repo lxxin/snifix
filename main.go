@@ -110,7 +110,8 @@ func parseVLessLink(link string) (Node, error) {
 
 // 解析 Trojan 链接
 func parseTrojanLink(link string) (Node, error) {
-	// trojan://<password>@<address>:<port>?security=<tls>&type=<network>&headerType=<headerType>#<remark>
+	// trojan://c9e598b2-39ba-4882-83c2-bb939216b9a0@ip0axv1bbsu02k7-hk.1ytnode.com:56304?allowInsecure=1#%5Btrojan%5D%20%E9%A6%99%E6%B8%AF%2004
+	// 打印link
 	parts := strings.Split(strings.TrimPrefix(link, "trojan://"), "@")
 	if len(parts) != 2 {
 		return Node{}, fmt.Errorf("invalid Trojan link: %s", link)
@@ -143,6 +144,7 @@ func parseTrojanLink(link string) (Node, error) {
 		Port:     port,
 		Password: password,
 		Remark:   remark,
+		TLS:      "tls", // 默认设置为 "tls"
 	}
 
 	// 解析查询参数
@@ -151,6 +153,9 @@ func parseTrojanLink(link string) (Node, error) {
 	}
 	if strings.Contains(query, "type=") {
 		node.Network = extractQueryParam(query, "type")
+	}
+	if strings.Contains(query, "sni=") {
+		node.SNI = extractQueryParam(query, "sni")
 	}
 
 	return node, nil
